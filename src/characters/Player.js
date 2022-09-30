@@ -32,6 +32,10 @@ export default class Player extends Phaser.Physics.Arcade.Image {
         });
     }
 
+    levelUp(amount) {
+        this.m_hpBar.increase(amount)
+    }
+
     // mob과 접촉했을 경우
     hitByMob(damage) {
         // 쿨타임이었던 경우 공격받지 않음
@@ -105,4 +109,5 @@ export default class Player extends Phaser.Physics.Arcade.Image {
     gainPower(amount) {
         this.m_hpBar.increase(amount);
     }
+
 }

@@ -1,4 +1,7 @@
 import game from "../index";
+import Player from "../characters/Player";
+import HpBar from "../ui/HpBar";
+
 
 let level_scene_paused = false;
 let level_time_paused = Date.now() - 100;
@@ -8,7 +11,6 @@ export default function level_pause(scene) {
         game.scene.pause(scene);
         level_time_paused = Date.now();
         level_scene_paused = scene;
-
         game.scene.getScene(scene).toggleLevelScreen(true);
         game.scene.getScene(scene).m_pauseInSound.play({ volume: 0.2 });
     }

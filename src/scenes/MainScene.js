@@ -9,12 +9,12 @@ export default class MainScene extends Phaser.Scene {
 
     create() {
         const bg = this.add.graphics();
-        bg.fillStyle(0xbbdefb);
+        bg.fillStyle(0xbbdefb);//0xbbdefb
         bg.fillRect(0, 0, Config.width, Config.height);
         bg.setScrollFactor(0);
 
         this.add
-            .bitmapText(Config.width / 2, 150, "pixelFont", "Meow Meow Fuzzyface", 40)
+            .bitmapText(Config.width / 2, 150, "pixelFont", "DaHoon", 40)
             .setOrigin(0.5);
 
         this.add.image(Config.width / 2, Config.height / 2, "cat");

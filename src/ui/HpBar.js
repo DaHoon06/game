@@ -20,6 +20,10 @@ export default class HpBar extends Phaser.GameObjects.Graphics {
         scene.add.existing(this);
     }
 
+    playerLevelUp(amount) {
+        this.increase(amount);
+    }
+
     increase(amount) {
         this.m_currentHp = clamp(this.m_currentHp + amount, 0, this.m_maxHp);
         this.draw();

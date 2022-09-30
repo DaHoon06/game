@@ -60,6 +60,7 @@ export default class PlayingScene extends Phaser.Scene {
         this.m_topBar = new TopBar(this);
         this.m_expBar = new ExpBar(this, 50);
 
+
         // mobs
         this.m_mobs = this.physics.add.group();
         // 맨 처음 mob 하나 추가 (안 추가하면 closest mob 찾는 부분에서 에러 발생)
@@ -192,6 +193,9 @@ export default class PlayingScene extends Phaser.Scene {
         this.m_pickupSound.play();
         this.m_expBar.increase(expUp.m_exp);
         if (this.m_expBar.m_currentExp >= this.m_expBar.m_maxExp) {
+            // this.m_player.m_hpBar(null, this, 100);
+            // 렙업 시 HP 올라감
+            this.m_player.levelUp(30);
             level_pause(this);
         }
     }
@@ -200,7 +204,7 @@ export default class PlayingScene extends Phaser.Scene {
         this.m_topBar.gainLevel();
 
         // TODO : 노가다 -> brilliant way
-        // 지금 방식 = 레벨업 할 때마다 mob 종류 추가 (없어지진 않음 ㅋ)
+        // 지금 방식 = 레벨업 할 때마다 mob 종류 추가
         if (this.m_topBar.m_level == 2) {
             this.addMob("dog", "dog_anim", 20, 0.6);
         } else if (this.m_topBar.m_level == 3) {
