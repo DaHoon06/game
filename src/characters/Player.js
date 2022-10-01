@@ -23,13 +23,24 @@ export default class Player extends Phaser.Physics.Arcade.Image {
         scene.physics.add.existing(this);
 
         // 1초마다 자동으로 공격
+        this.setAttackDelay(1000);
+
+    }
+
+    setAttackDelay(amount) {
+        let initDelay = 1000;
+        if (amount) initDelay = initDelay + amount;
         this.scene.time.addEvent({
-            delay: 1000,
+            delay: initDelay,
             callback: () => {
                 this.shootBeam();
             },
             loop: true,
         });
+    }
+
+    speedUp(amount) {
+        Player.PLAYER_SPEED = amount
     }
 
     levelUp(amount) {

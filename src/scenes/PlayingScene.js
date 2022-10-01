@@ -8,6 +8,7 @@ import global_pause from "../utils/pause";
 import level_pause from "../utils/levelup";
 import { getTimeString } from "../utils/time";
 import { getRandomPosition } from "../utils/math";
+import Beam from "../effects/Beam";
 
 export default class PlayingScene extends Phaser.Scene {
     constructor() {
@@ -60,7 +61,6 @@ export default class PlayingScene extends Phaser.Scene {
         this.m_topBar = new TopBar(this);
         this.m_expBar = new ExpBar(this, 50);
 
-
         // mobs
         this.m_mobs = this.physics.add.group();
         // 맨 처음 mob 하나 추가 (안 추가하면 closest mob 찾는 부분에서 에러 발생)
@@ -84,7 +84,7 @@ export default class PlayingScene extends Phaser.Scene {
         // player
         this.m_player = new Player(this);
         this.cameras.main.startFollow(this.m_player);
-
+        //this.m_beam = new Beam(this, this.m_player);
         // keys
         this.m_cursorKeys = this.input.keyboard.createCursorKeys();
         this.m_wasdKeys = this.input.keyboard.addKeys({
@@ -193,17 +193,24 @@ export default class PlayingScene extends Phaser.Scene {
         this.m_pickupSound.play();
         this.m_expBar.increase(expUp.m_exp);
         if (this.m_expBar.m_currentExp >= this.m_expBar.m_maxExp) {
-            // this.m_player.m_hpBar(null, this, 100);
             // 렙업 시 HP 올라감
             this.m_player.levelUp(30);
+            this.m_player.setAttackDelay(-50);
+            // 공속 증가
+            Beam.SPEED += 100;
+            // 사거리 증가
+            Beam.DURATION += 100;
+            // 스피드 증가
+            this.m_player.speedUp(5);
+            this.afterLevelUp();
+            // 랩업 했을때 경험치 최대 증가
+            this.m_expBar.increaseMaxExp(10);
             level_pause(this);
         }
     }
 
     afterLevelUp() {
         this.m_topBar.gainLevel();
-
-        // TODO : 노가다 -> brilliant way
         // 지금 방식 = 레벨업 할 때마다 mob 종류 추가
         if (this.m_topBar.m_level == 2) {
             this.addMob("dog", "dog_anim", 20, 0.6);
