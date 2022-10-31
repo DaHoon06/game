@@ -17,7 +17,7 @@ export default class MainScene extends Phaser.Scene {
             .bitmapText(Config.width / 2, 150, "pixelFont", "DaHoon", 40)
             .setOrigin(0.5);
 
-        this.add.image(Config.width / 2, Config.height / 2, "cat");
+        // this.add.image(Config.width / 2, Config.height / 2, "cat");
 
         new Button(
             Config.width / 2,

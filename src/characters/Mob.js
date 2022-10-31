@@ -8,11 +8,12 @@ export default class Mob extends Phaser.Physics.Arcade.Sprite {
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
+
         this.scale = 2;
         this.m_speed = 50;
         this.m_hp = initHp;
         this.m_dropRate = dropRate;
-
+        this.direction = 'R';
         if (animKey) {
             this.play(animKey);
         }
@@ -42,10 +43,39 @@ export default class Mob extends Phaser.Physics.Arcade.Sprite {
     update(time, delta) {
         if (!this.body) return;
 
-        // 오른쪽으로 향할 때는 오른쪽을, 왼쪽으로 향할 때는 왼쪽을 바라보도록 해줍니다.
-        if (this.body.velocity.x > 0) this.flipX = true;
-        else this.flipX = false;
+        if (this.body.velocity.x > 0 && this.direction === 'R') {
+            this.moveMonster('LEFT');
+        } else if (this.body.velocity.x > 0 && this.direction === 'L') {
+            this.moveMonster('RIGHT');
+        } else if (this.body.velocity.y > 0 && this.direction === 'U') {
+            this.moveMonster('UP');
+        } else {
+            this.moveMonster('DOWN');
+        }
     }
+    // 몬스터 방향
+    moveMonster (type) {
+        switch (type) {
+            case 'UP':
+                this.anims.play('bat_anim_up');
+                this.direction = 'D';
+                break;
+            case 'DOWN':
+                this.anims.play('bat_anim_down');
+                this.direction = 'U';
+                break;
+            case 'LEFT':
+                this.anims.play('bat_anim_left');
+                this.direction = 'L';
+                break;
+            case 'RIGHT':
+                this.anims.play('bat_anim_right');
+                this.direction = 'R';
+                break;
+        }
+
+    }
+
 
     // mob이 공격에 맞을 경우 실행되는 함수
     hit(projectile, damage) {

@@ -10,11 +10,12 @@ export const Direction = Object.freeze({
     Right: "Right",
 });
 
-export default class Player extends Phaser.Physics.Arcade.Image {
+export default class Player extends Phaser.Physics.Arcade.Sprite {
     static PLAYER_SPEED = 3;
 
     constructor(scene) {
-        super(scene, 400, 300, "cat");
+        super(scene, 400, 700, "man");
+
         this.scale = 0.4; // 크기 조정
         this.alpha = 1; // 투명도 설정
         this.m_hpBar = new HpBar(scene, this, 100); // HP bar 생성
@@ -24,7 +25,6 @@ export default class Player extends Phaser.Physics.Arcade.Image {
 
         // 1초마다 자동으로 공격
         this.setAttackDelay(1000);
-
     }
 
     setAttackDelay(amount) {
@@ -95,23 +95,30 @@ export default class Player extends Phaser.Physics.Arcade.Image {
         switch (direction) {
             case Direction.Up:
                 this.y -= Player.PLAYER_SPEED;
+                this.flipY = true;
                 break;
 
             case Direction.Down:
                 this.y += Player.PLAYER_SPEED;
+                this.flipY = false;
                 break;
 
             case Direction.Left:
                 this.x -= Player.PLAYER_SPEED;
-                this.flipX = true;
+                this.flipX = false;
                 break;
 
             case Direction.Right:
                 this.x += Player.PLAYER_SPEED;
-                this.flipX = false;
+                this.flipX = true;
                 break;
         }
     }
+
+    changeDirection() {
+
+    }
+
 
     shootBeam() {
         new Beam(this.scene, this);

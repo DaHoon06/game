@@ -2,12 +2,12 @@ import Phaser from "phaser";
 import Config from "../Config";
 import TopBar from "../ui/TopBar";
 import ExpBar from "../ui/ExpBar";
-import Player, { Direction } from "../characters/Player";
+import Player, {Direction} from "../characters/Player";
 import Mob from "../characters/Mob";
 import global_pause from "../utils/pause";
 import level_pause from "../utils/levelup";
-import { getTimeString } from "../utils/time";
-import { getRandomPosition } from "../utils/math";
+import {getTimeString} from "../utils/time";
+import {getRandomPosition} from "../utils/math";
 import Beam from "../effects/Beam";
 
 export default class PlayingScene extends Phaser.Scene {
@@ -70,7 +70,7 @@ export default class PlayingScene extends Phaser.Scene {
                 Config.width / 2 - 200,
                 Config.height / 2 - 200,
                 "bat",
-                "bat_anim",
+                "bat_anim_down",
                 10
             )
         );
@@ -93,6 +93,7 @@ export default class PlayingScene extends Phaser.Scene {
             left: Phaser.Input.Keyboard.KeyCodes.A,
             right: Phaser.Input.Keyboard.KeyCodes.D,
         });
+
 
         // collisions
         // collider : 충돌 -> 바운스 O
@@ -158,7 +159,8 @@ export default class PlayingScene extends Phaser.Scene {
         });
 
         // 처음에 나타날 mob을 추가해줍니다.
-        this.addMob("bat", "bat_anim", 10, 0.9);
+        this.addMob("bat", "bat_anim_down", 10, 0.9);
+        this.addMob("bat2", "bat2_anim", 10, 0.9);
     }
     //////////////////////////// END OF create() ////////////////////////////
 
@@ -172,11 +174,10 @@ export default class PlayingScene extends Phaser.Scene {
         this.m_background.tilePositionY = this.m_player.y - 300;
 
         /// player로부터 가장 가까운 mob으ㄹ 구합니다.
-        const closest = this.physics.closest(
+        this.m_closest = this.physics.closest(
             this.m_player,
             this.m_mobs.getChildren()
         );
-        this.m_closest = closest;
     }
 
     //////////////////////// FUNCTIONS ////////////////////////
