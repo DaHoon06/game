@@ -4,6 +4,7 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
+    "build-test": "babel src -d build",
     "build": "webpack --config webpack/prod.js",
     "start": "webpack-dev-server --config webpack/base.js --open",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -12,6 +13,7 @@
     "phaser": "^3.55.2"
   },
   "devDependencies": {
+    "@babel/cli": "^7.20.7",
     "@babel/core": "^7.18.2",
     "@babel/preset-env": "^7.18.2",
     "babel-loader": "^8.2.5",
@@ -22,7 +24,7 @@
     "raw-loader": "^4.0.2",
     "terser-webpack-plugin": "^5.3.1",
     "webpack": "^5.72.1",
-    "webpack-cli": "^4.9.2",
+    "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.9.0",
     "webpack-merge": "^5.8.0"
   },
