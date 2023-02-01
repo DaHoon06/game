@@ -5,7 +5,7 @@ import ExpBar from "../ui/ExpBar";
 import Player, {Direction} from "../characters/Player";
 import Mob from "../characters/Mob";
 import global_pause from "../utils/pause";
-import level_pause from "../utils/levelup";
+import level_pause from "../utils/levelUp";
 import {getTimeString} from "../utils/time";
 import {getRandomPosition} from "../utils/math";
 import Beam from "../effects/Beam";
