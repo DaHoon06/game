@@ -2,10 +2,12 @@
   "name": "phaser-boilerplate",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "parcel src/index.html -p 8081"
+    "dev": "parcel src/index.html -p 9500",
+    "build": "parcel build src/index.html  --no-source-maps --public-url /team1",
+    "deploy": "gh-pages -d dist"
   },
   "author": "",
   "license": "ISC",
@@ -28,5 +30,12 @@
   },
   "staticFiles": {
     "staticPath": "assets"
+  },
+  "source": [
+    "src/main.ts",
+    "src/index.html"
+  ],
+  "targets": {
+    "main": false
   }
 }
