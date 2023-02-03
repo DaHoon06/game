@@ -6,7 +6,9 @@ export class SceneController extends Phaser.Scene {
     }
 
     protected preload() {
+    }
 
+    protected create() {
     }
 
 }
