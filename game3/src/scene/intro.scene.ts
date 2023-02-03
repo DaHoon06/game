@@ -21,6 +21,8 @@ export class IntroScene extends SceneController {
   private attack_key: Phaser.Input.Keyboard.Key | null = null;
   private run_key: Phaser.Input.Keyboard.Key | null = null;
 
+  private background: any;
+
   constructor() {
     super("intro");
   }
@@ -29,7 +31,7 @@ export class IntroScene extends SceneController {
     const { width, height } = CONFIG;
     //const { width, height } = this.cameras.main;
     // this.add.image(width / 2, height / 2, 'stage').setScale(1);
-    this.add
+    this.background = this.add
       .tileSprite(0, 0, width as number, height as number, "stage")
       .setOrigin(0, 0)
       .setScale(1);
@@ -81,14 +83,12 @@ export class IntroScene extends SceneController {
       repeat: -1,
     });
 
-    this.hold = this.physics.add.sprite(300, 900, "player").play("HOLD");
-    this.walk = this.physics.add.sprite(300, 900, "player_walk").play("WALK");
-    this.run = this.physics.add.sprite(300, 900, "player_run").play("RUN");
-    this.attack = this.physics.add
-      .sprite(300, 800, "player_attack")
-      .play("ATTACK");
-    this.dead = this.physics.add.sprite(300, 900, "player_dead").play("DEAD");
-    console.log(this.hold);
+    this.hold = this.add.sprite(300, 900, "player").play("HOLD");
+    this.walk = this.add.sprite(300, 900, "player_walk").play("WALK");
+    this.run = this.add.sprite(300, 900, "player_run").play("RUN");
+    this.attack = this.add.sprite(300, 900, "player_attack").play("ATTACK");
+    this.dead = this.add.sprite(300, 900, "player_dead").play("DEAD");
+
     this.hold.visible = true;
     this.walk.visible = false;
     this.run.visible = false;
@@ -138,8 +138,8 @@ export class IntroScene extends SceneController {
       this.run!.visible = false;
       this.walk!.visible = true;
     });
-
-    //this.cameras.main.startFollow();
+    this.player = this.walk;
+    this.cameras.main.startFollow(this.player);
   }
 
   protected preload() {
@@ -182,6 +182,17 @@ export class IntroScene extends SceneController {
 
   update(time: number, delta: number) {
     this.keyEvent();
+    this.makeBackground();
+  }
+
+  /**
+   * @description 무한 배경
+   * @private
+   */
+  private makeBackground() {
+    const { width, height } = CONFIG as { width: number; height: number };
+    this.background.setX(this.player.x - width / 2);
+    this.background.tilePositionX = this.player.x - width / 2;
   }
 
   private keyEvent() {
@@ -198,7 +209,9 @@ export class IntroScene extends SceneController {
       this.hold!.setFlip(false, false);
       this.walk!.setFlip(false, false);
       this.hold!.visible = false;
-    } else if (this.keyControl.left.isDown && !this.atk) {
+    }
+
+    if (this.keyControl.left.isDown && !this.atk) {
       this.flip = true;
 
       if (this.runAction) {
@@ -212,7 +225,9 @@ export class IntroScene extends SceneController {
       this.walk!.setFlip(true, false);
       this.hold!.setFlip(true, false);
       this.hold!.visible = false;
-    } else if (!this.atk && !this.runAction) {
+    }
+
+    if (!this.atk && !this.runAction) {
       this.walk!.visible = false;
       this.hold!.visible = true;
       this.hold!.x = this.walk!.x;
