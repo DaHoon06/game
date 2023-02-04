@@ -1,20 +1,16 @@
 import Phaser from "phaser";
 
 export default class Soldier extends Phaser.GameObjects.Sprite {
-  private hold: Phaser.GameObjects.Sprite | null = null;
-  private walk: Phaser.GameObjects.Sprite | null = null;
-  private run: Phaser.GameObjects.Sprite | null = null;
-  private attack: Phaser.GameObjects.Sprite | null = null;
-  private dead: Phaser.GameObjects.Sprite | null = null;
+  private delay: number = 0;
+  private key: any;
 
   private atk: boolean = false;
-  private flip: boolean = false;
+
+  private moveAction: boolean = false;
   private runAction: boolean = false;
+  private attackAction: boolean = false;
 
-  private attack_key: Phaser.Input.Keyboard.Key | null = null;
-  private run_key: Phaser.Input.Keyboard.Key | null = null;
-
-  private keyControl: any;
+  private player: any;
 
   constructor(
     scene: Phaser.Scene,
@@ -24,90 +20,110 @@ export default class Soldier extends Phaser.GameObjects.Sprite {
     frame?: number | string
   ) {
     super(scene, x, y, texture, frame);
+    this.player = this.makeCharacter(x, y, texture);
+    this.player.play("HOLD");
+    this.keyControl();
+  }
 
-    this.hold!.visible = true;
-    this.walk!.visible = false;
-    this.run!.visible = false;
-    this.attack!.visible = false;
-    this.dead!.visible = false;
+  private makeCharacter(x: number, y: number, texture: string) {
+    return this.scene.physics.add
+      .sprite(x, y, texture)
+      .setBodySize(30, 0, true);
+  }
 
-    this.keyControl = this.scene.input.keyboard.createCursorKeys();
-    this.attack_key = this.scene.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.CTRL
-    );
-    this.attack_key.on("down", () => {
-      this.atk = true;
-      this.attack!.x = this.walk!.x;
+  private attack() {
+    const direct = this.player.flipX ? -1000 : 1000;
+    const bullet = this.scene.physics.add
+      .image(this.player.x, this.player.y + 15, "bullet")
+      .setScale(0.1)
+      .setAngle(90)
+      .setVelocityX(direct);
+    if (this.delay > 2) {
+      this.delay = 0;
+    }
+    this.delay += 1;
+    setTimeout(() => {
+      bullet.destroy();
+    }, 2000);
+  }
 
-      if (this.flip) this.attack!.setFlip(this.flip, false);
-      else this.attack!.setFlip(this.flip, false);
-
-      this.hold!.visible = false;
-      this.walk!.visible = false;
-      this.attack!.visible = true;
-      this.dead!.visible = false;
+  private keyControl() {
+    this.key = this.scene.input.keyboard.addKeys({
+      left: Phaser.Input.Keyboard.KeyCodes.LEFT,
+      right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
+      attack: Phaser.Input.Keyboard.KeyCodes.CTRL,
+      run: Phaser.Input.Keyboard.KeyCodes.SHIFT,
+      emotion1: Phaser.Input.Keyboard.KeyCodes.ONE,
     });
 
-    this.attack_key.on("up", () => {
-      this.atk = false;
-      this.attack!.x = this.walk!.x;
+    const { attack, run, emotion1, left, right } = this.key;
 
-      this.hold!.visible = true;
-      this.walk!.visible = false;
-      this.attack!.visible = false;
-      this.dead!.visible = false;
+    attack.on("down", () => {
+      this.attackAction = true;
+      this.moveAction = false;
+
+      this.player.play("ATTACK");
+      this.attack();
     });
-    this.run_key = this.scene.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.SHIFT
-    );
-    this.run_key.on("down", () => {
-      if (this.flip) this.run!.setFlip(this.flip, false);
-      else this.run!.setFlip(this.flip, false);
-
+    attack.on("up", () => {
+      this.attackAction = false;
+      this.moveAction = true;
+      this.player.play("HOLD");
+    });
+    run.on("down", () => {
       this.runAction = true;
-      this.run!.visible = true;
-      this.hold!.visible = false;
-      this.walk!.visible = false;
+      this.player.play("RUN");
     });
-    this.run_key.on("up", () => {
+    run.on("up", () => {
       this.runAction = false;
-      this.run!.visible = false;
-      this.walk!.visible = true;
+      this.player.play("WALK");
+    });
+
+    left.on("down", () => {
+      this.moveAction = true;
+      this.player.play("WALK");
+    });
+    left.on("up", () => {
+      this.moveAction = false;
+      this.player.play("HOLD");
+    });
+
+    right.on("down", () => {
+      this.moveAction = true;
+      this.player.play("WALK");
+      this.player.x += 2;
+    });
+    right.on("up", () => {
+      this.moveAction = false;
+      this.player.play("HOLD");
+    });
+
+    emotion1.on("down", () => {
+      this.player.play("EMOTION1");
     });
   }
 
-  public keyEvent() {
-    if (this.keyControl.right.isDown && !this.atk) {
-      this.flip = false;
-
+  private keyEvent() {
+    if (this.key.right.isDown && this.moveAction) {
+      this.player.setFlip(false);
       if (this.runAction) {
-        this.walk!.x += 4;
-        this.run!.x = this.walk!.x;
+        this.player!.x += 4;
       } else {
-        this.walk!.x += 2;
-        this.walk!.visible = true;
+        this.player!.x += 2;
       }
-      this.hold!.setFlip(false, false);
-      this.walk!.setFlip(false, false);
-      this.hold!.visible = false;
-    } else if (this.keyControl.left.isDown && !this.atk) {
-      this.flip = true;
-
+    } else if (this.key.left.isDown && this.moveAction) {
+      this.player.setFlip(true);
       if (this.runAction) {
-        this.walk!.x -= 4;
-        this.run!.x = this.walk!.x;
+        this.player!.x -= 4;
       } else {
-        this.walk!.x -= 2;
-        this.walk!.visible = true;
+        this.player!.x -= 2;
       }
-
-      this.walk!.setFlip(true, false);
-      this.hold!.setFlip(true, false);
-      this.hold!.visible = false;
-    } else if (!this.atk && !this.runAction) {
-      this.walk!.visible = false;
-      this.hold!.visible = true;
-      this.hold!.x = this.walk!.x;
+    } else if (!this.moveAction && !this.runAction && !this.attackAction) {
+      this.player.play("HOLD");
     }
+  }
+
+  get getCharacter() {
+    return this.player;
   }
 }
