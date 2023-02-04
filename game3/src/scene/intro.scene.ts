@@ -1,10 +1,14 @@
 import { SceneController } from "../controller/scene.controller";
 import CONFIG from "../config";
 import Soldier from "../ui/character/soldier";
+import Phaser from "phaser";
+import TopNav from "../ui/TopNav";
 
 export class IntroScene extends SceneController {
   private background: any;
   protected character: any;
+
+  private test: Phaser.GameObjects.Graphics | null = null;
 
   constructor() {
     super("intro");
@@ -12,12 +16,15 @@ export class IntroScene extends SceneController {
 
   protected async create() {
     super.create();
-    const { width, height } = CONFIG;
-    // this.background = this.add
-    //   .tileSprite(0, 0, width as number, height as number, "stage")
-    //   .setOrigin(0, 0)
-    //   .setScale(1);
 
+
+    const { width, height } = CONFIG;
+    this.background = this.add
+      .tileSprite(0, 0, width as number, height as number, "stage")
+      .setOrigin(0, 0)
+      .setScale(1);
+
+    this.test = new TopNav(this);
     this.character = new Soldier(this, 300, 900, "player");
 
     this.add.sprite(300, 900, "zombie1").play("zombie1_hold");
@@ -46,7 +53,7 @@ export class IntroScene extends SceneController {
 
   update(time: number, delta: number) {
     this.character.keyEvent();
-    //this.makeBackground();
+    this.makeBackground();
   }
 
   /**
@@ -55,7 +62,7 @@ export class IntroScene extends SceneController {
    */
   private makeBackground() {
     const { width, height } = CONFIG as { width: number; height: number };
-    this.background.setX(this.player.x - width / 2);
-    this.background.tilePositionX = this.player.x - width / 2;
+    this.background.setX(this.character.getCharacter.x - width / 2);
+    this.background.tilePositionX = this.character.getCharacter.x - width / 2;
   }
 }

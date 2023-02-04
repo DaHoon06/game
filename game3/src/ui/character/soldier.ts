@@ -10,6 +10,8 @@ export default class Soldier extends Phaser.GameObjects.Sprite {
   private runAction: boolean = false;
   private attackAction: boolean = false;
 
+  private hp: number= 10;
+
   private player: any;
 
   constructor(
