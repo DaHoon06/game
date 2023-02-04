@@ -1,26 +1,25 @@
 import Phaser from "phaser";
 import UIPlugin from "phaser3-rex-plugins/templates/ui/ui-plugin";
-import {IntroScene} from "./scene/intro.scene";
+import { IntroScene } from "./scene/intro.scene";
 
-
-const width = 800;
+const width = window.innerWidth;
 const height = window.innerHeight;
 
 export const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   width: 1920, // 화면 너비
-  height: 800, // 회면
+  height: 1080, // 회면
   parent: "game",
   scene: [
     // 장면 설정 - 화면에 필요한 씬들을 import (여러개를 import 했을 경우 첫번째 씬이 처음)
-    IntroScene
+    IntroScene,
   ],
   physics: {
     // 물리엔진
     default: "arcade",
     arcade: {
       gravity: { y: 0 },
-      debug: false,
+      debug: true,
       debugShowBody: true,
       debugBodyColor: 0xff0000,
       debugShowStaticBody: true,
