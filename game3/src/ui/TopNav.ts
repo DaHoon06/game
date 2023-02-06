@@ -13,12 +13,7 @@ export default class TopNav extends Phaser.GameObjects.Graphics {
       .fillRect(0, 0, width, 100)
       .setScrollFactor(0);
 
-    // this.nav.fillStyle(0x000000);
-    // this.nav.fillRect(this.x, this.y, 80, 16);
-    //
-    // //  Health
-    // this.nav.fillStyle(0xffffff);
-    // this.nav.fillRect(this.x + 2, this.y + 2, 76, 12);
+
 
     // 메뉴 그리기
     this.scene.add.existing(this.nav);

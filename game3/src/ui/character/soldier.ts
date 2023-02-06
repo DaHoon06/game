@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import HpBar from "../HpBar";
 
 export default class Soldier extends Phaser.GameObjects.Sprite {
   private delay: number = 0;
@@ -11,7 +12,8 @@ export default class Soldier extends Phaser.GameObjects.Sprite {
   private attackAction: boolean = false;
 
   private hp: number= 10;
-
+  private hpBar: Phaser.GameObjects.Graphics | null = null;
+  //private hpBar: any;
   private player: any;
 
   constructor(
@@ -25,6 +27,11 @@ export default class Soldier extends Phaser.GameObjects.Sprite {
     this.player = this.makeCharacter(x, y, texture);
     this.player.play("HOLD");
     this.keyControl();
+
+    //  Health
+    const hpBar = new HpBar(this.scene, 100, this.player.x, this.player.y);
+    console.log(hpBar)
+    this.scene.add.existing(hpBar);
   }
 
   private makeCharacter(x: number, y: number, texture: string) {
