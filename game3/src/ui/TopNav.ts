@@ -1,9 +1,11 @@
 import * as Phaser from "phaser";
 import CONFIG from '../config';
 import { SceneController } from "../controller/scene.controller";
+import Timer from "./Timer";
 
 export default class TopNav extends Phaser.GameObjects.Graphics {
   public nav: Phaser.GameObjects.Graphics | null = null;
+  private timer: any;
 
   constructor(scene: SceneController) {
     super(scene);
@@ -19,5 +21,16 @@ export default class TopNav extends Phaser.GameObjects.Graphics {
     // 메뉴 그리기
     this.scene.add.existing(stamina)
     this.scene.add.existing(hp)
+
+    this.timer = new Timer(this.scene, width - 200, 45, "60", {
+      color: "black",
+      stroke: "#cccccc",
+      strokeThickness: 1,
+      padding: {
+        x: 2,
+        y: 2,
+      },
+    });
+    this.scene.add.text(0, 0, '360').setScale(1, 1).setDepth(999)
   }
 }
