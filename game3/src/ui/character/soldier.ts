@@ -5,16 +5,14 @@ export default class Soldier extends Phaser.GameObjects.Sprite {
   private delay: number = 0;
   private key: any;
 
-  private atk: boolean = false;
-
   private moveAction: boolean = false;
   private runAction: boolean = false;
   private attackAction: boolean = false;
 
-  private hp: number= 10;
-  private hpBar: Phaser.GameObjects.Graphics | null = null;
-  //private hpBar: any;
-  private player: any;
+  private hp: number= 100;
+
+  public hpBar: Phaser.GameObjects.Graphics | null = null;
+  public player: any;
 
   constructor(
     scene: Phaser.Scene,
@@ -29,9 +27,12 @@ export default class Soldier extends Phaser.GameObjects.Sprite {
     this.keyControl();
 
     //  Health
-    const hpBar = new HpBar(this.scene, 100, this.player.x, this.player.y);
-    console.log(hpBar)
-    this.scene.add.existing(hpBar);
+    this.draw();
+  }
+
+  public draw() {
+    this.hpBar = new HpBar(this.scene, this.hp, this.player.x, this.player.y);
+    this.scene.add.existing(this.hpBar);
   }
 
   private makeCharacter(x: number, y: number, texture: string) {

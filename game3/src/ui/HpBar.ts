@@ -15,16 +15,13 @@ export default class HpBar extends Phaser.GameObjects.Graphics {
     this.draw();
   }
 
-  private draw() {
-    console.log(this.x, this.y)
+  public draw() {
     this.fillStyle(0x000000);
     this.fillRect(-42, -32, 80, 16);
 
     //  Health
-
     this.fillStyle(0xffffff);
     this.fillRect(-40, -30, 76, 12);
-
     if (this.hp < 30) {
       this.fillStyle(0xff0000);
     } else {
@@ -32,7 +29,6 @@ export default class HpBar extends Phaser.GameObjects.Graphics {
     }
 
     //var d = Math.floor(this.p * this.value);
-
-    this.fillRect(this.x + 2, this.y + 2, 10, 12);
+    this.fillRect(-40, -30, 76, 12);
   }
 }
