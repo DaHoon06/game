@@ -1,16 +1,15 @@
 import { SceneController } from "../controller/scene.controller";
 import CONFIG from "../config";
 import Soldier from "../ui/character/soldier";
-import Phaser from "phaser";
-import TopNav from "../ui/TopNav";
+
+import { HpBar, StaminaBar } from "../ui/StatusBar";
 
 export class IntroScene extends SceneController {
   private background: any;
   protected character: any;
-
+  public staminaBar: any;
+  public hpBar: any;
   private currentStamina: number = 0;
-
-  public nav: any;
 
   constructor() {
     super("intro");
@@ -25,7 +24,8 @@ export class IntroScene extends SceneController {
       .setOrigin(0, 0)
       .setScale(1);
 
-    this.nav = new TopNav(this);
+    this.staminaBar = new StaminaBar(this);
+    this.hpBar = new HpBar(this);
     this.character = new Soldier(this, 300, 900, "player");
 
     this.cameras.main.startFollow(this.character.getCharacter);
@@ -40,9 +40,9 @@ export class IntroScene extends SceneController {
     const attackAction = this.character.attk;
     if (!attackAction) {
       if (this.currentStamina > 0 && runAction) {
-        this.nav.reDrawStamina(this.currentStamina);
+        this.staminaBar.reDrawStamina(this.currentStamina);
       } else if (!runAction) {
-        this.character.setStamina = this.nav.incrementStamina(
+        this.character.setStamina = this.staminaBar.incrementStamina(
           this.currentStamina
         );
       }

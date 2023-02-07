@@ -1,50 +1,63 @@
 import Phaser from "phaser";
+import { SceneController } from "../controller/scene.controller";
+import CONFIG from "../config";
 
 class HpBar extends Phaser.GameObjects.Graphics {
-  private bar: Phaser.GameObjects.Graphics | any;
+  public hpBar: Phaser.GameObjects.Graphics | null = null;
   public hp: number = 0;
-  public x: number = 0;
-  public y: number = 0;
 
-  constructor(scene: any, hp: number, x: number, y: number) {
+  constructor(scene: SceneController) {
     super(scene);
-    this.hp = hp;
-    this.x = x;
-    this.y = y;
+
     this.draw();
   }
 
   public draw() {
-    const hp = this.fillStyle(0x00ff00).fillRect(this.x, 50, 200, 16);
-
-    //  Health
-    if (this.hp < 30) {
-      this.fillStyle(0xff0000);
-    } else {
-      this.fillStyle(0x00ff00);
-    }
-
-    //var d = Math.floor(this.p * this.value);
-    this.fillRect(-40, -30, 76, 12);
-
-    this.scene.add.existing(hp);
+    const { width } = CONFIG as { width: number };
+    this.fillStyle(0xffffff, 0).fillRect(0, 0, width, 100).setScrollFactor(0);
+    this.hpBar = this.fillStyle(0x00ff00).fillRect(10, 50, 200, 16);
+    this.scene.add.existing(this.hpBar);
   }
 }
 
 class StaminaBar extends Phaser.GameObjects.Graphics {
-  public stamina: number = 0;
+  public staminaBar: Phaser.GameObjects.Graphics | null = null;
+  private stamina: number = 0;
 
-  constructor(scene: any, stamina: number, x: number, y: number) {
+  constructor(scene: SceneController) {
     super(scene);
-    this.stamina = stamina;
-    this.x = x;
-    this.y = y;
+
     this.draw();
   }
 
   public draw() {
-    const stamina = this.fillStyle(0xff9900).fillRect(this.x, 70, 200, 16);
-    this.scene.add.existing(stamina);
+    const { width } = CONFIG as { width: number };
+    this.fillStyle(0xffffff, 0).fillRect(0, 0, width, 100).setScrollFactor(0);
+    this.staminaBar = this.fillStyle(0xff9900).fillRect(10, 70, 200, 16);
+    this.scene.add.existing(this.staminaBar);
+  }
+
+  public reDrawStamina(stamina: number) {
+    this.staminaBar!.clear();
+    this.fillStyle(0xff9900).fillRect(10, 70, this.stamina, 16);
+    this.stamina = stamina;
+    if (this.stamina < 80) {
+      this.staminaBar!.clear();
+      this.fillStyle(0xff0000).fillRect(10, 70, this.stamina, 16);
+    }
+  }
+  public incrementStamina(stamina: number) {
+    let color = 0;
+    this.stamina = stamina;
+
+    if (this.stamina < 80) color = 0xff0000;
+    else color = 0xff9900;
+
+    if (stamina < 200) {
+      this.stamina += 0.2;
+      this.fillStyle(color).fillRect(10, 70, this.stamina, 16);
+    }
+    return this.stamina;
   }
 }
 

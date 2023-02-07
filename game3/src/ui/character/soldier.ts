@@ -1,7 +1,5 @@
 import Phaser from "phaser";
-import { HpBar, StaminaBar } from "../StatusBar";
 import { SceneController } from "../../controller/scene.controller";
-import CONFIG from "../../config";
 
 export default class Soldier extends Phaser.Physics.Arcade.Sprite {
   private delay: number = 0;
@@ -10,8 +8,6 @@ export default class Soldier extends Phaser.Physics.Arcade.Sprite {
   private moveAction: boolean = false;
   private runAction: boolean = false;
   private attackAction: boolean = false;
-
-  private hp: number = 100;
   private stamina: number = 200;
 
   public hpBar: Phaser.GameObjects.Graphics | null = null;
@@ -26,23 +22,10 @@ export default class Soldier extends Phaser.Physics.Arcade.Sprite {
     frame?: number | string
   ) {
     super(scene, x, y, texture, frame);
+    this.scene = scene;
     this.player = this.makeCharacter(x, y, texture);
     this.player.play("HOLD");
     this.keyControl();
-
-    //this.makeStatusBar();
-  }
-
-  public makeStatusBar() {
-    const { width, height } = CONFIG as { width: number; height: number };
-    //const { width, height, x, y } = this.scene.cameras.main;
-    this.hpBar = new HpBar(this.scene, this.hp, this.player.x, this.player.y);
-    this.staminaBar = new StaminaBar(
-      this.scene,
-      this.stamina,
-      this.scene.cameras.main.x,
-      height / 2
-    );
   }
 
   private makeCharacter(x: number, y: number, texture: string) {
