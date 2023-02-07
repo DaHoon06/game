@@ -2,6 +2,9 @@ import Phaser from "phaser";
 import { SceneController } from "../controller/scene.controller";
 import CONFIG from "../config";
 
+/**
+ * @description: 체력 관련 class
+ */
 class HpBar extends Phaser.GameObjects.Graphics {
   public hpBar: Phaser.GameObjects.Graphics | null = null;
   public hp: number = 0;
@@ -20,6 +23,9 @@ class HpBar extends Phaser.GameObjects.Graphics {
   }
 }
 
+/**
+ * @description: 스테미너 관련 class
+ */
 class StaminaBar extends Phaser.GameObjects.Graphics {
   public staminaBar: Phaser.GameObjects.Graphics | null = null;
   private stamina: number = 0;
@@ -46,6 +52,7 @@ class StaminaBar extends Phaser.GameObjects.Graphics {
       this.fillStyle(0xff0000).fillRect(10, 70, this.stamina, 16);
     }
   }
+
   public incrementStamina(stamina: number) {
     let color = 0;
     this.stamina = stamina;

@@ -5,14 +5,17 @@ export default class Soldier extends Phaser.Physics.Arcade.Sprite {
   private delay: number = 0;
   private key: any;
 
+  // 움직임 옵션
   private moveAction: boolean = false;
   private runAction: boolean = false;
   private attackAction: boolean = false;
-  private stamina: number = 200;
 
-  public hpBar: Phaser.GameObjects.Graphics | null = null;
-  public staminaBar: Phaser.GameObjects.Graphics | null = null;
-  public player: any;
+  // 캐릭터 스텟
+  private hp: number = 100;
+  private stamina: number = 200;
+  private power: number = 2;
+
+  public player: Phaser.Physics.Arcade.Sprite;
 
   constructor(
     scene: SceneController,
@@ -51,6 +54,7 @@ export default class Soldier extends Phaser.Physics.Arcade.Sprite {
   }
 
   private run() {
+    this.player.play("RUN", true);
     this.stamina -= 1;
   }
 
@@ -76,79 +80,87 @@ export default class Soldier extends Phaser.Physics.Arcade.Sprite {
       right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
       attack: Phaser.Input.Keyboard.KeyCodes.CTRL,
       run: Phaser.Input.Keyboard.KeyCodes.SHIFT,
-      emotion1: Phaser.Input.Keyboard.KeyCodes.ONE,
+      emotion1: Phaser.Input.Keyboard.KeyCodes.NUMPAD_ONE,
     });
 
     const { attack, run, emotion1, left, right } = this.key;
 
     attack.on("down", () => {
       this.attackAction = true;
-      this.moveAction = false;
-      this.player.play("ATTACK");
+      this.player.play("ATTACK", false);
       this.attack();
     });
     attack.on("up", () => {
       this.attackAction = false;
-      this.moveAction = true;
-      this.player.play("HOLD");
+      if (this.moveAction) this.player.play("WALK", true);
+      else this.player.play("HOLD", true);
     });
 
     run.on("down", () => {
-      if (this.stamina > 35) {
-        this.player.play("RUN");
+      this.moveAction = true;
+      if (this.stamina > 15 && !this.attackAction) {
         this.runAction = true;
+        this.player.play("RUN", true);
       }
     });
     run.on("up", () => {
       this.runAction = false;
-      this.player.play("WALK");
+      this.player.play("HOLD", true);
     });
 
     left.on("down", () => {
       this.moveAction = true;
-      this.player.play("WALK");
+      this.player.play("WALK", true);
     });
     left.on("up", () => {
       this.moveAction = false;
-      this.player.play("HOLD");
+      if (!this.moveAction) this.player.play("HOLD", true);
     });
 
     right.on("down", () => {
       this.moveAction = true;
-      this.player.play("WALK");
+      this.player.play("WALK", true);
       this.player.x += 2;
     });
     right.on("up", () => {
       this.moveAction = false;
-      this.player.play("HOLD");
+      if (!this.moveAction) this.player.play("HOLD", true);
     });
 
     emotion1.on("down", () => {
-      this.player.play("EMOTION1");
+      this.player.play("EMOTION1", true);
     });
   }
 
   private keyEvent() {
-    if (this.key.right.isDown && this.moveAction) {
-      this.player.setFlip(false);
+    if (this.key.run.isDown && this.stamina <= 0) {
+      this.runAction = false;
+      this.player.play("WALK", true);
+    }
+
+    if (this.key.right.isDown && !this.attackAction) {
+      this.player.setFlip(false, false);
       if (this.runAction && this.stamina > 0) {
         this.player!.x += 4;
         this.run();
       } else {
-        this.runAction = false;
+        this.player.play("WALK", true);
         this.player!.x += 2;
       }
-    } else if (this.key.left.isDown && this.moveAction) {
-      this.player.setFlip(true);
+    } else if (this.key.left.isDown && !this.attackAction) {
+      this.player.setFlip(true, false);
+
       if (this.runAction && this.stamina > 0) {
         this.player!.x -= 4;
         this.run();
       } else {
+        this.player.play("WALK", true);
         this.player!.x -= 2;
       }
     }
+
     // else if (!this.moveAction && !this.runAction && !this.attackAction) {
-    //   this.player.play("HOLD");
+    //   this.player.play("HOLD", true);
     // }
   }
 
