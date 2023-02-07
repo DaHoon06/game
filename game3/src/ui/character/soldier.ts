@@ -1,7 +1,9 @@
 import Phaser from "phaser";
-import HpBar from "../HpBar";
+import { HpBar, StaminaBar } from "../StatusBar";
+import { SceneController } from "../../controller/scene.controller";
+import CONFIG from "../../config";
 
-export default class Soldier extends Phaser.GameObjects.Sprite {
+export default class Soldier extends Phaser.Physics.Arcade.Sprite {
   private delay: number = 0;
   private key: any;
 
@@ -9,13 +11,15 @@ export default class Soldier extends Phaser.GameObjects.Sprite {
   private runAction: boolean = false;
   private attackAction: boolean = false;
 
-  private hp: number= 100;
+  private hp: number = 100;
+  private stamina: number = 200;
 
   public hpBar: Phaser.GameObjects.Graphics | null = null;
+  public staminaBar: Phaser.GameObjects.Graphics | null = null;
   public player: any;
 
   constructor(
-    scene: Phaser.Scene,
+    scene: SceneController,
     x: number,
     y: number,
     texture: string,
@@ -26,13 +30,19 @@ export default class Soldier extends Phaser.GameObjects.Sprite {
     this.player.play("HOLD");
     this.keyControl();
 
-    //  Health
-    this.draw();
+    //this.makeStatusBar();
   }
 
-  public draw() {
+  public makeStatusBar() {
+    const { width, height } = CONFIG as { width: number; height: number };
+    //const { width, height, x, y } = this.scene.cameras.main;
     this.hpBar = new HpBar(this.scene, this.hp, this.player.x, this.player.y);
-    this.scene.add.existing(this.hpBar);
+    this.staminaBar = new StaminaBar(
+      this.scene,
+      this.stamina,
+      this.scene.cameras.main.x,
+      height / 2
+    );
   }
 
   private makeCharacter(x: number, y: number, texture: string) {
@@ -57,6 +67,26 @@ export default class Soldier extends Phaser.GameObjects.Sprite {
     }, 2000);
   }
 
+  private run() {
+    this.stamina -= 1;
+  }
+
+  public get getStamina() {
+    return this.stamina;
+  }
+
+  public set setStamina(stamina: number) {
+    this.stamina = stamina;
+  }
+
+  public get running() {
+    return this.runAction;
+  }
+
+  public get attk() {
+    return this.attackAction;
+  }
+
   private keyControl() {
     this.key = this.scene.input.keyboard.addKeys({
       left: Phaser.Input.Keyboard.KeyCodes.LEFT,
@@ -71,7 +101,6 @@ export default class Soldier extends Phaser.GameObjects.Sprite {
     attack.on("down", () => {
       this.attackAction = true;
       this.moveAction = false;
-
       this.player.play("ATTACK");
       this.attack();
     });
@@ -80,9 +109,12 @@ export default class Soldier extends Phaser.GameObjects.Sprite {
       this.moveAction = true;
       this.player.play("HOLD");
     });
+
     run.on("down", () => {
-      this.runAction = true;
-      this.player.play("RUN");
+      if (this.stamina > 35) {
+        this.player.play("RUN");
+        this.runAction = true;
+      }
     });
     run.on("up", () => {
       this.runAction = false;
@@ -116,21 +148,25 @@ export default class Soldier extends Phaser.GameObjects.Sprite {
   private keyEvent() {
     if (this.key.right.isDown && this.moveAction) {
       this.player.setFlip(false);
-      if (this.runAction) {
+      if (this.runAction && this.stamina > 0) {
         this.player!.x += 4;
+        this.run();
       } else {
+        this.runAction = false;
         this.player!.x += 2;
       }
     } else if (this.key.left.isDown && this.moveAction) {
       this.player.setFlip(true);
-      if (this.runAction) {
+      if (this.runAction && this.stamina > 0) {
         this.player!.x -= 4;
+        this.run();
       } else {
         this.player!.x -= 2;
       }
-    } else if (!this.moveAction && !this.runAction && !this.attackAction) {
-      this.player.play("HOLD");
     }
+    // else if (!this.moveAction && !this.runAction && !this.attackAction) {
+    //   this.player.play("HOLD");
+    // }
   }
 
   get getCharacter() {
