@@ -1,8 +1,8 @@
 import Phaser from "phaser";
 import { SceneController } from "../../controller/scene.controller";
+import { Bullet } from "../weapon/bullet";
 
 export default class Soldier extends Phaser.Physics.Arcade.Sprite {
-  private delay: number = 0;
   private key: any;
 
   // 움직임 옵션
@@ -13,7 +13,6 @@ export default class Soldier extends Phaser.Physics.Arcade.Sprite {
   // 캐릭터 스텟
   private hp: number = 100;
   private stamina: number = 200;
-  private power: number = 2;
 
   public player: Phaser.Physics.Arcade.Sprite;
 
@@ -28,6 +27,7 @@ export default class Soldier extends Phaser.Physics.Arcade.Sprite {
     this.scene = scene;
     this.player = this.makeCharacter(x, y, texture);
     this.player.play("HOLD");
+    this.player.setCollideWorldBounds(true);
     this.keyControl();
   }
 
@@ -38,19 +38,18 @@ export default class Soldier extends Phaser.Physics.Arcade.Sprite {
   }
 
   private attack() {
-    const direct = this.player.flipX ? -1000 : 1000;
-    const bullet = this.scene.physics.add
-      .image(this.player.x, this.player.y + 15, "bullet")
-      .setScale(0.1)
-      .setAngle(90)
-      .setVelocityX(direct);
-    if (this.delay > 2) {
-      this.delay = 0;
-    }
-    this.delay += 1;
+    const bullet = new Bullet(
+      this.scene,
+      this.player.x,
+      this.player.y,
+      "bullet",
+      this.player,
+      2
+    );
+
     setTimeout(() => {
       bullet.destroy();
-    }, 2000);
+    }, 400);
   }
 
   private run() {
@@ -133,6 +132,10 @@ export default class Soldier extends Phaser.Physics.Arcade.Sprite {
   }
 
   private keyEvent() {
+    if (this.key.run.isDown && this.stamina > 0 && this.runAction) {
+      this.run();
+    }
+
     if (this.key.run.isDown && this.stamina <= 0) {
       this.runAction = false;
       this.player.play("WALK", true);
@@ -142,7 +145,6 @@ export default class Soldier extends Phaser.Physics.Arcade.Sprite {
       this.player.setFlip(false, false);
       if (this.runAction && this.stamina > 0) {
         this.player!.x += 4;
-        this.run();
       } else {
         this.player.play("WALK", true);
         this.player!.x += 2;
@@ -152,7 +154,6 @@ export default class Soldier extends Phaser.Physics.Arcade.Sprite {
 
       if (this.runAction && this.stamina > 0) {
         this.player!.x -= 4;
-        this.run();
       } else {
         this.player.play("WALK", true);
         this.player!.x -= 2;
