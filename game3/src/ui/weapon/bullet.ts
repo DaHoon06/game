@@ -16,13 +16,15 @@ export class Bullet extends Phaser.Physics.Arcade.Image {
   ) {
     super(scene, x, y, texture);
     const direct = player.flipX ? -1000 : 1000;
-    this.bullet = scene.physics.add
+    this.bullet = this.scene.physics.add
       .image(player.x, player.y + 15, texture)
       .setScale(0.1)
       .setAngle(90)
+      .setBodySize(30, 30, true)
       .setVelocityX(direct);
   }
 
-
-
+  makeBullet() {
+    return this.bullet;
+  }
 }

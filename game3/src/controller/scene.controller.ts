@@ -2,10 +2,11 @@ import Phaser from "phaser";
 
 export class SceneController extends Phaser.Scene {
   protected player: any;
-  constructor(protected sceneName: string) {
-    super(sceneName);
 
-    console.log("컨트롤러");
+  public zombieGroup: any;
+  public zombie: any;
+  constructor(scene: any) {
+    super(scene);
   }
 
   protected preload() {
@@ -134,7 +135,7 @@ export class SceneController extends Phaser.Scene {
       frameRate: 5,
       repeat: -1,
     });
-    
+
     // 좀비2 애니메이션
     this.anims.create({
       key: "zombie2_hold",
@@ -254,7 +255,7 @@ export class SceneController extends Phaser.Scene {
       frameHeight: 128,
     });
 
-    // 좀비1 
+    // 좀비1
     this.load.spritesheet("zombie1", "img/enemy/ZombieMen.png", {
       frameWidth: 96,
       frameHeight: 96,
@@ -268,13 +269,11 @@ export class SceneController extends Phaser.Scene {
       startFrame: 1,
     });
 
-    
     // 좀비 3
     this.load.spritesheet("zombie3", "img/enemy/WildZombie.png", {
       frameWidth: 96,
       frameHeight: 96,
       startFrame: 1,
     });
-
   }
 }

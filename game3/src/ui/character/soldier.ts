@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-import { SceneController } from "../../controller/scene.controller";
 import { Bullet } from "../weapon/bullet";
 
 export default class Soldier extends Phaser.Physics.Arcade.Sprite {
@@ -15,19 +14,19 @@ export default class Soldier extends Phaser.Physics.Arcade.Sprite {
   private stamina: number = 200;
 
   public player: Phaser.Physics.Arcade.Sprite;
+  private controller: any;
 
   constructor(
-    scene: SceneController,
+    scene: any,
     x: number,
     y: number,
     texture: string,
     frame?: number | string
   ) {
     super(scene, x, y, texture, frame);
-    this.scene = scene;
+    this.controller = scene;
     this.player = this.makeCharacter(x, y, texture);
     this.player.play("HOLD");
-    this.player.setCollideWorldBounds(true);
     this.keyControl();
   }
 
@@ -39,13 +38,14 @@ export default class Soldier extends Phaser.Physics.Arcade.Sprite {
 
   private attack() {
     const bullet = new Bullet(
-      this.scene,
+      this.controller,
       this.player.x,
       this.player.y,
       "bullet",
       this.player,
       2
     );
+    this.controller.hitCheck(bullet.makeBullet());
 
     setTimeout(() => {
       bullet.destroy();
