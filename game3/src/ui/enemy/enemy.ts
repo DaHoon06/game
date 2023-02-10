@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 
 export default class Enemy extends Phaser.Physics.Arcade.Sprite {
+  static ZOMBIE_SPEED = 10;
   private hp: number = 2;
   private zombie: any;
 
@@ -17,20 +18,18 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.hp = hp;
 
     scene.add.existing(this);
-    this.zombie = scene.physics.add.existing(this).setBodySize(30, 100, true);
+    this.zombie = scene.physics.add
+      .existing(this)
+      .setBodySize(30, 100, true)
+      .setData("killCount", 1);
     this.zombie.play(`${texture}_hold`);
 
-    this.on("overlapstart", () => {
-      this.hpCheck();
-    });
-
-    const test = [];
-    test.push(
+    const _closet = [];
+    _closet.push(
       this.scene.time.addEvent({
         delay: 100,
         callback: () => {
           const test = scene.physics.moveToObject(this, scene.character, 10);
-
           if (test < -0.5) {
             this.zombie.setFlip(true);
           } else {
@@ -46,15 +45,13 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     });
   }
 
+  speedUp(amount: number) {
+    // console.log(amount);
+  }
+
   createZombie(x: number, y: number, texture: string) {
     return this.scene.physics.add
       .sprite(x, y, texture)
       .setBodySize(30, 100, true);
-  }
-
-  hpCheck() {
-    this.hp -= 1;
-    console.log(this.hp);
-    return this.hp;
   }
 }

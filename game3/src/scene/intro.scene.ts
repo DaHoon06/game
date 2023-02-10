@@ -4,14 +4,22 @@ import Soldier from "../ui/character/soldier";
 import Phaser from "phaser";
 
 import { HpBar, StaminaBar } from "../ui/StatusBar";
-import Timer from "../ui/Timer";
 import Enemy from "../ui/enemy/enemy";
 
 export class IntroScene extends SceneController {
   private background: any;
-  protected character: any;
   public staminaBar: any;
   public hpBar: any;
+
+  private width: number = 0;
+  private height: number = 0;
+
+  private killCount: number = 0;
+
+  protected character: any;
+  private characterX: number = 0;
+  private zombieCount: number = 0;
+  private testLocation: any;
 
   constructor() {
     super("intro");
@@ -19,17 +27,19 @@ export class IntroScene extends SceneController {
 
   protected async create() {
     super.create();
+    this.data.set("killCount", 0);
+    const { width, height } = CONFIG as { width: number; height: number };
+    this.width = width;
+    this.height = height;
 
-    const { width, height } = CONFIG;
     this.background = this.add
-      .tileSprite(0, 0, width as number, height as number, "stage")
+      .tileSprite(0, 0, this.width, this.height, "stage")
       .setOrigin(0, 0)
       .setScale(1);
 
     this.staminaBar = new StaminaBar(this);
     this.hpBar = new HpBar(this);
     this.character = new Soldier(this, 300, 900, "player");
-
     this.cameras.main.startFollow(this.character.getCharacter);
 
     this.zombieGroup = this.physics.add.group();
@@ -37,105 +47,57 @@ export class IntroScene extends SceneController {
     this.time.addEvent({
       delay: 2000,
       callback: () => {
-        const x = this.getRandomPosition(this.character.x);
+        const x = this.getRandomPosition(this.characterX);
         this.zombieGroup.add(
           new Enemy(this, x, 915, "zombie1", this.character, 2)
         );
+        if (this.zombieCount > 5) {
+          this.zombieGroup.add(
+            new Enemy(this, x + 100, 915, "zombie2", this.character, 4)
+          );
+        }
+
+        if (this.zombieCount > 10) {
+          this.zombieGroup.add(
+            new Enemy(this, x + 500, 915, "zombie3", this.character, 6)
+          );
+        }
+        this.zombieCount++;
       },
       loop: true,
     });
+    /**
+     * @description 캐릭터와 좀비가 부딪혔을 때
+     */
+    this.physics.add.overlap(
+      this.character.getCharacter,
+      this.zombieGroup,
+      this.zombieAttack as ArcadePhysicsCallback,
+      this.zombieHold as ArcadePhysicsCallback,
+      this
+    );
 
-    // for (let i = 0; i < 20; i++) {
-    //   const createZombie = new Enemy(
-    //     this,
-    //     100 + 50,
-    //     915,
-    //     "zombie1",
-    //     this.player,
-    //     2
-    //   );
-    //   const mob = createZombie.createZombie(100 + 50 * i, 915, "zombie1");
-    //
-    //   if (i % 2 === 0) mob.play("zombie1_hold");
-    //   else mob.play("zombie1_run");
-    //
-    //   this.zombieGroup.add(mob);
-    // }
+    this.makeKillCount();
+  }
 
-    /*setInterval(() => {
-      var enemy = this.physics.add.sprite(
-          this.character.x + 1200,  // Generate random x position
-          920,  // Generate random y position
-          'zombie1'
-      ).play("zombie1_walk");
-
-      enemy.flipX = true;
-      enemy.setVelocity(-50, 0);
-    }, 2000)
-
-    var enemy = this.physics.add.sprite(
-        this.character.x + 1200,  // Generate random x position
-        920,  // Generate random y position
-        'zombie1'
-    ).play("zombie1_run");
-
-    enemy.flipX = true;
-    enemy.setVelocity(-200, 0);
-    enemy.setBounce(0.2).setCollideWorldBounds(true);*/
-
-    // var enemies = this.physics.add.group({
-    //   key: "zombie1",
-    //   frameQuantity: 10,
-    //   collideWorldBounds: true,
-    //   // setXY: { x: 500, y: 900, stepX: 50 },
-    //   velocityX: 10,
-    // });
-    //
-    // // var a = this.physics.add
-    // //   .sprite(300, 900, "player")
-    // //   .setBodySize(30, 0, true)
-    // //   .setVelocity(30, 0)
-    // //   .setCollideWorldBounds(true);
-    // const test = enemies.getChildren()[0];
-    // console.log(test);
-    //
-    // var enemy2 = enemies.create(this.character.x, 915, "zombie1");
-    // enemy2.play("zombie1_walk").setBodySize(30, 0, true);
-
-    // this.time.addEvent({
-    //   delay: 100,
-    //   callback: () => {
-    //     this.physics.moveToObject(enemy2, this.character, 50);
-    //   },
-    //   loop: true,
-    // });
-
-    // var enemy = enemies.create(this.character.x + 200, 915, "zombie1");
-    // enemy.flipX = true;
-    // enemy.play("zombie1_walk").setBodySize(30, 0, true);
-
-    // this.physics.add.collider(a, enemy);
-    // this.physics.add.collider(this.character.getCharacter, enemy);
-    // this.physics.add.collider(enemies, this.character);
-
-    /*enemies.children.iterate((r) => {
-      r.getData('zombie1').filpX = true
-      console.log(r.getData('flip'))
-
-    })*/
-    /*for (let i = 0 ; i < 11 ; i++) {
-      var e = enemies.create(400, 900, 'zombie1')
-      e.flipX = true;
-    }*/
-    // enemy.playAnimation('zombie1_walk')
-    // enemy.flipX = true;
-    // enemy.setVelocity(-50, 0);
+  private makeKillCount() {
+    this.add
+      .text(960, 60, `KILL: ${this.killCount}`)
+      .setOrigin(0.5)
+      .setDepth(9999)
+      .setStyle({
+        fontSize: 30,
+        color: "red",
+      })
+      .setFontStyle("bold")
+      .setScrollFactor(0)
+      .setName("killCountText");
   }
 
   getRandomPosition(x: number) {
     const random = Math.random() * Math.PI * 2;
-    const { width, height } = CONFIG as { width: number; height: number };
-    const _r = Math.sqrt(width * width + height * height) / 2;
+    const _r =
+      Math.sqrt(this.width * this.width + this.height * this.height) / 2;
     return x + _r * Math.cos(random) || 100;
   }
 
@@ -151,29 +113,58 @@ export class IntroScene extends SceneController {
 
   private hit(
     bullet: Phaser.Types.Physics.Arcade.GameObjectWithBody,
-    zombie: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
+    zombie: any
   ) {
-    zombie.play("zombie1_dead", true);
-    // const hp = this.zombieTest.hpCheck();
-    // // HP 남았으면 달리기
-    // if (hp <= 0) {
-    //   zombie.play("zombie1_dead", true);
-    //   setTimeout(() => {
-    //     zombie.destroy();
-    //   }, 1000);
-    // } else {
-    //   zombie.play("zombie1_walk", true);
-    // }
-    setTimeout(() => {
-      zombie.destroy();
-    }, 900);
+    const { texture, zombie: zombieInstance } = zombie;
+    const { key } = texture;
+
+    const hp = zombieInstance.hp;
+    if (hp === 0) {
+      zombie.play(`${key}_dead`, true);
+      this.calculateScore();
+      setTimeout(() => {
+        zombie.destroy();
+      }, 900);
+    } else {
+      //TODO: 달리기 및 점프할 때 좀비 이동 속도 증가
+      zombieInstance.hp -= 1;
+      if (hp <= 1) {
+        zombie.play(`${key}_jump`, true);
+      } else {
+        zombie.play(`${key}_run`, true);
+      }
+    }
     bullet.destroy();
+    // setTimeout(() => {
+    //   bullet.destroy();
+    // }, 100);
+  }
+
+  private zombieAttack(charter: any, zombie: any) {
+    const { texture, zombie: zombieInstance } = zombie;
+    const { key } = texture;
+    zombie.play(`${key}_attack`, true);
+  }
+  private zombieHold(charter: any, zombie: any) {
+    const { texture, zombie: zombieInstance } = zombie;
+    const { key } = texture;
+  }
+
+  public calculateScore() {
+    this.data.set("killCount", (this.data.get("killCount") as number) + 1);
+    (
+      this.children.getByName("killCountText") as Phaser.GameObjects.Text
+    ).setText("KILL: " + (this.data.get("killCount") as number));
   }
 
   update(time: number, delta: number) {
     this.character.keyEvent();
     this.characterAction();
-    // this.physics.closest(this.player, this.zombieGroup.getChildren());
+    this.characterX = this.character.getCharacter.x - this.width / 2;
+    this.testLocation = this.physics.closest(
+      this.characterX,
+      this.zombieGroup.getChildren()
+    );
     this.makeInfinityBackground();
   }
 
@@ -199,8 +190,8 @@ export class IntroScene extends SceneController {
    * @private
    */
   private makeInfinityBackground() {
-    const { width, height } = CONFIG as { width: number; height: number };
-    this.background.setX(this.character.getCharacter.x - width / 2);
-    this.background.tilePositionX = this.character.getCharacter.x - width / 2;
+    this.background.setX(this.character.getCharacter.x - this.width / 2);
+    this.background.tilePositionX =
+      this.character.getCharacter.x - this.width / 2;
   }
 }
