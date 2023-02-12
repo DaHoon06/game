@@ -275,5 +275,9 @@ export class SceneController extends Phaser.Scene {
       frameHeight: 96,
       startFrame: 1,
     });
+
+    // 사운드 파일
+    this.load.audio('attack', 'sounds/attack.mp3');
+    this.load.audio('walk', 'sounds/walk.mp3');
   }
 }

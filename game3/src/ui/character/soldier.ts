@@ -9,6 +9,8 @@ export default class Soldier extends Phaser.Physics.Arcade.Sprite {
   private runAction: boolean = false;
   private attackAction: boolean = false;
 
+  private walkbgm: any;
+
   // 캐릭터 스텟
   private hp: number = 100;
   private stamina: number = 200;
@@ -28,6 +30,7 @@ export default class Soldier extends Phaser.Physics.Arcade.Sprite {
     this.player = this.makeCharacter(x, y, texture);
     this.player.play("HOLD");
     this.keyControl();
+    this.walkBgm();
   }
 
   private makeCharacter(x: number, y: number, texture: string) {
@@ -45,6 +48,19 @@ export default class Soldier extends Phaser.Physics.Arcade.Sprite {
       this.player,
       2
     );
+
+    const musicConfig = {
+      mute: false,
+      volume: 0.5,
+      rate: 1,
+      detune: 0,
+      seek: 0,
+      loop: false,
+      delay: 0,
+    };
+    const bgm = this.scene.sound.add("attack");
+    bgm.play(musicConfig);
+
     this.controller.hitCheck(bullet.makeBullet());
 
     setTimeout(() => {
@@ -84,6 +100,8 @@ export default class Soldier extends Phaser.Physics.Arcade.Sprite {
 
     const { attack, run, emotion1, left, right } = this.key;
 
+
+
     attack.on("down", () => {
       this.attackAction = true;
       this.player.play("ATTACK", false);
@@ -108,10 +126,12 @@ export default class Soldier extends Phaser.Physics.Arcade.Sprite {
     });
 
     left.on("down", () => {
+      this.walkbgm.start();
       this.moveAction = true;
       this.player.play("WALK", true);
     });
     left.on("up", () => {
+      this.walkbgm.stop();
       this.moveAction = false;
       if (!this.moveAction) this.player.play("HOLD", true);
     });
@@ -165,6 +185,19 @@ export default class Soldier extends Phaser.Physics.Arcade.Sprite {
     // }
   }
 
+
+  private walkBgm() {
+    const musicConfig = {
+      mute: false,
+      volume: 0.5,
+      rate: 1,
+      detune: 0,
+      seek: 0,
+      loop: false,
+      delay: 0,
+    };
+    this.walkbgm = this.scene.sound.add("walk", musicConfig);
+  }
   get getCharacter() {
     return this.player;
   }
